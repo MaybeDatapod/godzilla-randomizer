@@ -13,11 +13,12 @@ textSeedObj = wxlua.wxLuaObject(text_seed_val)
 ID_MAPS = 1
 ID_BASES = 2
 ID_BOSSES = 3
-ID_MONSTERS = 4
-ID_MONTOGGLE = 5
+ID_GHIDORA = 4
+ID_MONSTERS = 5
+ID_MONTOGGLE = 6
 
 function main()
-    frame = wx.wxFrame(wx.NULL, wx.wxID_ANY, "Godzilla Randomizer v0.2", wx.wxDefaultPosition, wx.wxSize(350, 530), wx.wxDEFAULT_FRAME_STYLE)
+    frame = wx.wxFrame(wx.NULL, wx.wxID_ANY, "Godzilla Randomizer v0.2", wx.wxDefaultPosition, wx.wxSize(350, 560), wx.wxDEFAULT_FRAME_STYLE)
     local notebook = wx.wxNotebook(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxDefaultSize)
 
     local panel = wx.wxPanel(notebook, wx.wxID_ANY)
@@ -35,9 +36,11 @@ function main()
     
     local bossSel = wx.wxChoice(panel, ID_BOSSES, wx.wxDefaultPosition, wx.wxDefaultSize, {"Off", "Easy Shuffle", "Intermediate Shuffle", "Difficult Shuffle"}, 1)
     bossSel:SetSelection(0)
+    local ghidoraCheck = wx.wxCheckBox(panel, ID_BASES, "Allow Ghidora to appear outside of Planet X", wx.wxDefaultPosition, wx.wxDefaultSize, wx.wxLB_MULTIPLE)
     local radioBoxStaticBox = wx.wxStaticBox(panel, wx.wxID_ANY, "Boss Shuffle")
     local radioBoxStaticBoxSizer = wx.wxStaticBoxSizer(radioBoxStaticBox, wx.wxVERTICAL);
     radioBoxStaticBoxSizer:Add(bossSel, 1, wx.wxALL + wx.wxGROW + wx.wxCENTER, 5)
+    radioBoxStaticBoxSizer:Add(ghidoraCheck, 1, wx.wxALL + wx.wxGROW + wx.wxCENTER, 5)
     
     local monsterSel = wx.wxCheckBox(panel, ID_MONSTERS, "Shuffle Godzilla and Mothra", wx.wxDefaultPosition, wx.wxDefaultSize, wx.wxLB_MULTIPLE)
     local monBox = wx.wxStaticBox(panel, wx.wxID_ANY, "Monster Shuffle")
@@ -73,13 +76,13 @@ function main()
                 baseCheck:SetValue(false)
             end
         end
-        local flagString = bool_to_number(mapCheck:GetValue())..bool_to_number(baseCheck:GetValue())..bossSel:GetSelection()..bool_to_number(monsterSel:GetValue())..monChoice:GetSelection()
+        local flagString = bool_to_number(mapCheck:GetValue())..bool_to_number(baseCheck:GetValue())..bossSel:GetSelection()..bool_to_number(ghidoraCheck:GetValue())..bool_to_number(monsterSel:GetValue())..monChoice:GetSelection()
         flagCtrl:SetValue(basen(flagString, 36))
     end)
     
     panel:Connect(wx.wxID_ANY, wx.wxEVT_COMMAND_CHOICE_SELECTED,
     function(event)
-        local flagString = bool_to_number(mapCheck:GetValue())..bool_to_number(baseCheck:GetValue())..bossSel:GetSelection()..bool_to_number(monsterSel:GetValue())..monChoice:GetSelection()
+        local flagString = bool_to_number(mapCheck:GetValue())..bool_to_number(baseCheck:GetValue())..bossSel:GetSelection()..bool_to_number(ghidoraCheck:GetValue())..bool_to_number(monsterSel:GetValue())..monChoice:GetSelection()
         flagCtrl:SetValue(basen(flagString, 36))
     end)
     
@@ -88,12 +91,13 @@ function main()
         if flagCtrl:GetValue() == "" then
             flagCtrl:SetValue("0")
         end
-        local flags = string.format("%.0f", tonumber(flagCtrl:GetValue(), 36)+11111)
+        local flags = string.format("%.0f", tonumber(flagCtrl:GetValue(), 36)+111111)
             mapCheck:SetValue((string.sub(flags, 1, 1)-1)%2)
             baseCheck:SetValue((string.sub(flags, 2, 2)-1)%2)
             bossSel:SetSelection((string.sub(flags, 3, 3)-1)%4)
-            monsterSel:SetValue((string.sub(flags, 4, 4)-1)%2)
-            monChoice:SetSelection((string.sub(flags, 5, 5)-1)%3)
+            ghidoraCheck:SetValue((string.sub(flags, 4, 4)-1)%2)
+            monsterSel:SetValue((string.sub(flags, 5, 5)-1)%2)
+            monChoice:SetSelection((string.sub(flags, 6, 6)-1)%3)
     end)
 
     panel:Connect(wx.wxID_ANY, wx.wxEVT_COMMAND_BUTTON_CLICKED,
@@ -103,7 +107,7 @@ function main()
             randomizer.mapShuffle(textCtrl:GetValue(), baseCheck:GetValue())
         end
         if bossSel:GetSelection() ~= 0 then
-            randomizer.bossShuffle(bossSel:GetSelection())
+            randomizer.bossShuffle(bossSel:GetSelection(), ghidoraCheck:GetValue())
         end
         if monsterSel:GetValue() == true then
             randomizer.shuffleMons()
@@ -115,7 +119,7 @@ function main()
     end)
 
     sizer:Add(checkBoxStaticBoxSizer, 28, wx.wxALL + wx.wxGROW, 5)
-    sizer:Add(radioBoxStaticBoxSizer, 24, wx.wxALL + wx.wxGROW, 5)
+    sizer:Add(radioBoxStaticBoxSizer, 34, wx.wxALL + wx.wxGROW, 5)
     sizer:Add(monBoxSizer, 34, wx.wxALL + wx.wxGROW, 5)
     sizer:Add(textCtrlStaticBoxSizer, 22, wx.wxALL + wx.wxGROW, 5)
     sizer:Add(flagCtrlStaticBoxSizer, 22, wx.wxALL + wx.wxGROW, 5)
