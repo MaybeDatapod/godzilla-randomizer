@@ -18,7 +18,7 @@ ID_MONSTERS = 5
 ID_MONTOGGLE = 6
 
 function main()
-    frame = wx.wxFrame(wx.NULL, wx.wxID_ANY, "Godzilla Randomizer v0.2", wx.wxDefaultPosition, wx.wxSize(350, 560), wx.wxDEFAULT_FRAME_STYLE)
+    frame = wx.wxFrame(wx.NULL, wx.wxID_ANY, "Godzilla Randomizer v0.2.1", wx.wxDefaultPosition, wx.wxSize(350, 560), wx.wxDEFAULT_FRAME_STYLE)
     local notebook = wx.wxNotebook(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxDefaultSize)
 
     local panel = wx.wxPanel(notebook, wx.wxID_ANY)
