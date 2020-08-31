@@ -9,3 +9,6 @@
 * Boss Shuffle - Shuffles the game's bosses with three different difficulty settings
 * Monster Shuffle - Shuffles the locations of Godzilla and Mothra
 * Monster Removal - Remove either Godzilla or Mothra from the game
+* Color Palette Randomization
+* Music Shuffle
+* Misc. Settings (infinite boss timers, infinite map movement, intro skip, and starting level change)
