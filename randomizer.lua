@@ -118,6 +118,7 @@ end
 
 function bossShuffle(type, ghidora)
     xstarM = lShuffle({0xE88C, 0xE88B, 0xE88A, 0xE889, 0xE888, 0xE887, 0xE886, 0xE885})
+    damM = lShuffle({0x1E9A1, 0x1E9A2, 0x1E9A3, 0x1E9A4, 0x1E9A5, 0x1E9A6, 0x1E9A7, 0x1E9A8})
     earthO = lShuffle({0xE838, 0xE836})
     marO = lShuffle({0xE844, 0xE843, 0xE842})
     jupO = lShuffle({0xE850, 0xE84F, 0xE84E, 0xE84D})
@@ -175,6 +176,7 @@ function bossShuffle(type, ghidora)
     local pluS = {0x1E, 0x1B, 0x27, 0x2B, 0x14, 0x17, 0x12}
     local nepS = {0x24, 0x11, 0x23, 0x25, 0x12, 0x14, 0x15}
     local xstarS = {0x3F, 0x39, 0x2E, 0x3A, 0x34, 0x29, 0x2F, 0x23}
+    local damS = {0x26, 0x20, 0x1B, 0x25, 0x24, 0x1F, 0x1A, 0x15}
     for i = 1, 2 do
         rom = replaceByte(earthO[i], rom, 0xF1)
     end
@@ -220,6 +222,9 @@ function bossShuffle(type, ghidora)
     for i = 1, 8 do
         rom = replaceByte(xstarM[i], rom, xstarS[i])
     end
+    for i = 1, 8 do
+        rom = replaceByte(damM[i], rom, damS[i])
+    end
 end
 
 function shuffleMons()
@@ -255,6 +260,10 @@ function shuffleMons()
         rom = replaceByte(0xE881, rom, 0x03)
         rom = replaceByte(0xE882, rom, 0x02)
     end
+    if math.random(0, 1) == 1 then
+        rom = replaceByte(0x1E99D, rom, 0x01)
+        rom = replaceByte(0x1E99E, rom, 0x00)
+    end
 end
 
 function removeMon(monster)
@@ -266,6 +275,130 @@ function removeMon(monster)
     rom = replaceByte(0xE868 + monster, rom, 0xF6)
     rom = replaceByte(0xE874 + monster, rom, 0xF7)
     rom = replaceByte(0xE880 + monster, rom, 0xF8)
+    rom = replaceByte(0x1E99C + monster, rom, 0xF1)
+end
+
+function paletteRand()
+    gBytes1 = {0x1D125, 0x1D126}
+    gBytes2 = {0x1D0ED, 0x1D0EE, 0x1D0EF, 0x1D0F0, 0x1D0F1, 0x1D0F2, 0x1D127, 0x1D143, 0x1D144, 0x1D145, 0xF0D9, 0xF0DA}
+    mBytes1 = {0x1AF40, 0x1D186, 0x1D324}
+    mBytes2 = {0xF0DD, 0x1AF3E, 0x1AF3F, 0x1AF6E, 0x1D17F, 0x1D322, 0x1D323}
+    mBytes3 = {0x1AF6F, 0x1AF70, 0x1D182, 0x1D183, 0x1D184, 0x1D185, 0x1D187}
+    gpal = math.random(0, 11)
+    gpal2 = gpal
+    if gpal2 > 0 then
+        gpal2 = gpal2 - 12
+    end
+    mpal = math.random(0, 11)
+    mpal2, mpal3, mpal4, mpal5 = mpal, mpal, mpal, mpal
+    if mpal >= 11 then
+        mpal2 = mpal2 - 12
+        mpal3 = mpal3 - 12
+        mpal4 = mpal4 - 12
+        mpal5 = mpal5 - 12
+    elseif mpal >= 7 then
+        mpal3 = mpal3 - 12
+        mpal4 = mpal4 - 12
+        mpal5 = mpal5 - 12
+    elseif mpal >= 6 then
+        mpal4 = mpal4 - 12
+        mpal5 = mpal5 - 12
+    elseif mpal >= 5 then
+        mpal5 = mpal5 - 12
+    end
+    for i = 1, 2 do
+        rom = replaceByte(gBytes1[i], rom, tonumber(getByte(gBytes1[i], rom), 16)+gpal)
+    end
+    for i = 1, 12 do
+        rom = replaceByte(gBytes2[i], rom, tonumber(getByte(gBytes2[i], rom), 16)+gpal2)
+    end
+    rom = replaceByte(0xF0DE, rom, tonumber(getByte(0xF0DE, rom), 16)+mpal)
+    rom = replaceByte(0x1D180, rom, tonumber(getByte(0x1D180, rom), 16)+mpal2)
+    for i = 1, 3 do
+        if mBytes1[i] == 0x1D324 then
+            rom = replaceByte(mBytes1[i], rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0x10, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0x20, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0x30, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0x40, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0x50, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0x5D, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0x87, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0x97, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0xA7, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0xB7, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0xC7, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0xD7, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            rom = replaceByte(mBytes1[i] + 0xE7, rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+            
+        else
+            rom = replaceByte(mBytes1[i], rom, tonumber(getByte(mBytes1[i], rom), 16)+mpal3)
+        end
+    end
+    for i = 1, 7 do
+        if mBytes2[i] == 0x1D322 or mBytes2[i] == 0x1D323 then
+            rom = replaceByte(mBytes2[i], rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0x10, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0x20, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0x30, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0x40, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0x50, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0x5D, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0x87, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0x97, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0xA7, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0xB7, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0xC7, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0xD7, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+            rom = replaceByte(mBytes2[i] + 0xE7, rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+        else
+            rom = replaceByte(mBytes2[i], rom, tonumber(getByte(mBytes2[i], rom), 16)+mpal4)
+        end
+    end
+    for i = 1, 7 do
+        rom = replaceByte(mBytes3[i], rom, tonumber(getByte(mBytes3[i], rom), 16)+mpal5)
+    end
+end
+
+function musicRand()--type)
+    --if type == 1 then
+        local tracks = {0x10648, 0x10649, 0x1064A, 0x1064B, 0x1064C, 0x1064D, 0x1064E, 0x1064F, 0x10650, 0x10651, 0x10652, 0x10653, 0x10654, 0x10655, 0x10656, 0x10657, 0x1397E, 0x1E266, 0x1F40B, 0x1F574}
+        local songs = lShuffle({0x14, 0x12, 0x10, 0x11, 0x0F, 0x0F, 0x1B, 0x13, 0x02, 0x09, 0x0C, 0x0B, 0x0E, 0x0D, 0x0A, 0x08, 0x19, 0x08, 0x09, 0x17})
+        for i = 1, 20 do
+            if i > 8 and i < 17 then
+                rom = replaceByte(tracks[i], rom, songs[i])
+                rom = replaceByte(tracks[i]+0xE3EC, rom, songs[i])
+                rom = replaceByte(tracks[i]+0xE65F, rom, songs[i])
+            elseif tracks[i] == 0x1397E then
+                rom = replaceByte(0x1397E, rom, songs[i])
+                rom = replaceByte(0x1797E, rom, songs[i])
+                rom = replaceByte(0x1B980, rom, songs[i])
+            else
+                rom = replaceByte(tracks[i], rom, songs[i])
+            end
+        end
+    --elseif type == 2 then
+    --    local tracks = {0x10648, 0x10649, 0x1064A, 0x1064B, 0x1064C, 0x1064D, 0x1064E, 0x1064F, 0x10650, 0x10651, 0x10652, 0x10653, 0x10654, 0x10655, 0x10656, 0x10657, 0x1397E, 0x1797E, 0x1B980, 0x1E266, 0x1EA3C, 0x1EA3D, 0x1EA3E, 0x1EA3F, 0x1EA40, 0x1EA41, 0x1EA42, 0x1EA43, 0x1ECAF, 0x1ECB0, 0x1ECB1, 0x1ECB2, 0x1ECB3, 0x1ECB4, 0x1ECB5, 0x1ECB6, 0x1F40B, 0x1F574}
+    --    for i = 1, 38 do
+    --        rom = replaceByte(tracks[i], rom, 0x00)
+    --    end
+    --end
+end
+
+function miscSettings(time, move, intro, level)
+    if time == true then
+        rom = replaceByte(0x1C640, rom, 0xA5)
+    end
+    if move == true then
+        rom = replaceByte(0xE44A, rom, 0xA5)
+    end
+    if intro == true then
+        rom = replaceByte(0x1BED2, rom, 0x00)
+        rom = replaceByte(0x1F46C, rom, 0x00)
+    end
+    if level > 0 then
+        rom = replaceByte(0x1E91E, rom, level)
+    end
 end
 
 function writeRom(seed)
@@ -297,6 +430,9 @@ randomizer.mapShuffle = mapShuffle
 randomizer.bossShuffle = bossShuffle
 randomizer.shuffleMons = shuffleMons
 randomizer.removeMon = removeMon
+randomizer.paletteRand = paletteRand
+randomizer.musicRand = musicRand
+randomizer.miscSettings = miscSettings
 randomizer.romSetup = romSetup
 randomizer.writeRom = writeRom
 return randomizer
